@@ -1,0 +1,37 @@
+
+cxx = g++
+
+cflags = -c -g
+
+gtestsubdir = gtest/1.6.0
+
+includes = -I. -I/home/mike/root/production/tools/include/$gtestsubdir
+
+libraries = -L/home/mike/root/production/tools/lib/$gtestsubdir -lgtest -lpthread
+
+rule build-o
+    command = $cxx -o $out $cflags $includes $libraries $in 
+    description = building $out
+
+rule build-e
+    command = $cxx -o $out $in $libraries
+    description = linking $out
+
+rule clean
+    command = rm testsuite.o testsuite
+    description = cleaning testsuite.o testsuite
+
+rule test
+    command = ./testsuite
+    description = running the testsuite
+
+
+build testsuite.o: build-o testsuite.cc | vectorconst.hh
+build testsuite: build-e testsuite.o
+
+build test: test | testsuite
+
+default testsuite
+
+build clean: clean
+
