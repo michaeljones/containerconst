@@ -23,6 +23,7 @@ protected:
         dataVector.push_back( new Data( 2 ) );
         dataVector.push_back( new Data( 3 ) );
         dataVector.push_back( new Data( 4 ) );
+        dataVector.push_back( new Data( 5 ) );
     }
 
     virtual void TearDown()
@@ -92,25 +93,73 @@ TEST_F( VectorConstTestFixture, empty )
     EXPECT_EQ( constIntVector.empty(), dataVector.empty() );
 }
 
-TEST_F( VectorConstTestFixture, iterator )
+TEST_F( VectorConstTestFixture, iteration )
 {
-    /*
+    vectorconst< Data > constDataVector( dataVector );
+
+    vectorconst< Data >::const_iterator constIt = constDataVector.begin();
+    vectorconst< Data >::const_iterator constEnd = constDataVector.end();
+
+    std::vector< Data* >::iterator it = dataVector.begin();
+    std::vector< Data* >::iterator end = dataVector.end();
+
+    for ( ; it != end; ++it, ++constIt )
     {
-        vectorconst< Data > constDataVector( dataVector );
-
-        vectorconst< Data >::const_iterator constIt = constDataVector.begin();
-        vectorconst< Data >::const_iterator constEnd = constDataVector.end();
-
-        std::vector< Data* >::iterator it = dataVector.begin();
-        std::vector< Data* >::iterator end = dataVector.end();
-
-        for ( ; it != end; ++it, ++constIt )
-        {
-            (*constIt)->a = 0;
-            EXPECT_EQ( *it, *constIt );
-        }
+        EXPECT_EQ( *it, *constIt );
     }
-    */
+}
+
+TEST_F( VectorConstTestFixture, iterator_increment_decrement_operators )
+{
+    vectorconst< Data > constDataVector( dataVector );
+
+    vectorconst< Data >::const_iterator constIt = constDataVector.begin();
+    std::vector< Data* >::iterator it = dataVector.begin();
+
+    EXPECT_EQ( *it, *constIt );
+    EXPECT_EQ( *(++it), *(++constIt) );
+    EXPECT_EQ( *(it++), *(constIt++) );
+    EXPECT_EQ( *(it += 2), *(constIt += 2) );
+    EXPECT_EQ( *(it -= 1), *(constIt -= 1) );
+    EXPECT_EQ( *(it--), *(constIt--) );
+    EXPECT_EQ( *(--it), *(--constIt) );
+}
+
+TEST_F( VectorConstTestFixture, iterator_comparison_operators )
+{
+    vectorconst< Data > constDataVector( dataVector );
+
+    vectorconst< Data >::const_iterator constIt = constDataVector.begin();
+    std::vector< Data* >::iterator it = dataVector.begin();
+
+    EXPECT_EQ( *it, *constIt );
+
+    it += 2;
+    constIt += 2;
+
+    EXPECT_EQ( it > it, constIt > constIt );
+    EXPECT_EQ( it > it + 1, constIt > constIt + 1 );
+    EXPECT_EQ( it > it - 1, constIt > constIt - 1 );
+
+    EXPECT_EQ( it < it, constIt < constIt );
+    EXPECT_EQ( it < it + 1, constIt < constIt + 1 );
+    EXPECT_EQ( it < it - 1, constIt < constIt - 1 );
+
+    EXPECT_EQ( it >= it, constIt >= constIt );
+    EXPECT_EQ( it >= it + 1, constIt >= constIt + 1 );
+    EXPECT_EQ( it >= it - 1, constIt >= constIt - 1 );
+
+    EXPECT_EQ( it <= it, constIt <= constIt );
+    EXPECT_EQ( it <= it + 1, constIt <= constIt + 1 );
+    EXPECT_EQ( it <= it - 1, constIt <= constIt - 1 );
+
+    EXPECT_EQ( it == it, constIt == constIt );
+    EXPECT_EQ( it == it + 1, constIt == constIt + 1 );
+    EXPECT_EQ( it == it - 1, constIt == constIt - 1 );
+
+    EXPECT_EQ( it != it, constIt != constIt );
+    EXPECT_EQ( it != it + 1, constIt != constIt + 1 );
+    EXPECT_EQ( it != it - 1, constIt != constIt - 1 );
 }
 
 // Copied from gtest/src/gtest_main.cc
