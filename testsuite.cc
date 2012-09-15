@@ -6,6 +6,8 @@
 #include <gtest/gtest.h>
 
 
+class Data { int a; };
+
 class VectorConstTestFixture : public testing::Test
 {
 protected:
@@ -15,19 +17,36 @@ protected:
         intVector.push_back( 1 );
         intVector.push_back( 2 );
         intVector.push_back( 3 );
+
+        dataVector.push_back( new Data );
+        dataVector.push_back( new Data );
+        dataVector.push_back( new Data );
+        dataVector.push_back( new Data );
     }
 
     virtual void TearDown()
     {
         intVector.clear();
+
+        for ( size_t i=0; i<dataVector.size(); ++i )
+        {
+            delete dataVector[i];
+        }
+
+        dataVector.clear();
     }
 
     std::vector< int > intVector;
+    std::vector< Data* > dataVector;
 };
 
 TEST_F( VectorConstTestFixture, Constructor )
 {
     vectorconst< int > constIntVector( intVector );
+
+    vectorconst< Data* > constDataVector( dataVector );
+
+    const Data * bob = constDataVector[ 0 ];
 }
 
 TEST_F( VectorConstTestFixture, At )
@@ -77,6 +96,22 @@ TEST_F( VectorConstTestFixture, empty )
     vectorconst< int > constIntVector( intVector );
 
     EXPECT_EQ( constIntVector.empty(), intVector.empty() );
+}
+
+TEST_F( VectorConstTestFixture, iterator )
+{
+    vectorconst< int > constIntVector( intVector );
+
+    vectorconst< int >::const_iterator constIt = constIntVector.begin();
+    vectorconst< int >::const_iterator constEnd = constIntVector.end();
+
+    std::vector< int >::iterator it = intVector.begin();
+    std::vector< int >::iterator end = intVector.end();
+
+    for ( ; it != end; ++it, ++constIt )
+    {
+        EXPECT_EQ( *it, *constIt );
+    }
 }
 
 // Copied from gtest/src/gtest_main.cc
