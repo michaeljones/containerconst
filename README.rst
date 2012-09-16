@@ -21,7 +21,7 @@ const``.
 Example
 -------
 
-This is the awkward case with ``std::vector< T* >``.
+This is the awkward case with ``std::vector< T* >``::
 
    class Node
    {
